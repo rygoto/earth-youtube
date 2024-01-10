@@ -9,7 +9,7 @@ const port = 3000;
 async function fetchVideos(regionCode) {
     const youtube = google.youtube({
         version: 'v3',
-        auth: 'AIzaSyAttX4v8wYrjQVo2yeqzSXWLBjfrRu3KZY' // ここにあなたのYouTube APIキーを設定
+        auth: ''
     });
 
     const response = await youtube.videos.list({
