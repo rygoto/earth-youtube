@@ -1,37 +1,63 @@
-import React, { useRef, useState, useEffect, forwardRef } from 'react';
+import React, { useRef, useState, useEffect, forwardRef, memo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Html } from '@react-three/drei';
+import { OrbitControls, Html, Text } from '@react-three/drei';
 import * as THREE from 'three';
-//import { cubeData } from './CountyCube';
-
-const cubeData = [
-  //なんか位置がずれている！！！
-  //東アジア 
-  { id: "JP", position: new THREE.Vector3(-0.6076, 0.5934, -0.5264), name: "日本" },    //日本
-  { id: "KR", position: new THREE.Vector3(-0.4928, 0.5976, -0.6257), name: "韓国" },    //韓国
-  { id: "US", position: new THREE.Vector3(-0.159207, 0.635375, 0.755181), name: "アメリカ" },    //アメリカ
-  { id: "CA", position: new THREE.Vector3(-0.110040, 0.809703, 0.575856), name: "カナダ" },    //カナダ
-]
+import { cubeData } from './CountyCube';
 
 function Earth({ cubeData }) {
   const earthRef = useRef();
   const textureLoader = new THREE.TextureLoader();
   const earthTexture = textureLoader.load('./Albedo.jpg');
   const diamondRefs = useRef(new Map());
+  const [currentTag, setCurrentTag] = useState("");
+
+  useFrame(() => {
+    //earthRef.current.rotation.y += 0.001;
+  });
 
   useFrame(({ camera }) => {
-    // 地球のアニメーションを追加する場合
-    //earthRef.current.rotation.y += 0.001;
+    const xPosition = camera.position.x;
+    const zPosition = camera.position.z;
+    let tag = "";
+
+    if (zPosition > 0) {
+      tag = "america";
+    } else if (zPosition < 0) {
+      tag = "asia";
+    }
+
+    setCurrentTag(tag); // 現在のタグを更新
   });
 
   return (
     <mesh ref={earthRef} geometry={new THREE.SphereGeometry(1, 64, 64)}>
       <meshStandardMaterial map={earthTexture} />
       {cubeData.map((data) => (
-        <Diamond key={data.id} position={data.position} name={data.name} ref={(ref) => diamondRefs.current.set(data.name, ref)} />
+        <Diamond
+          key={data.id}
+          position={data.position}
+          name={data.name}
+          id={data.id}
+          tag={data.tag}
+          currentTag={currentTag}
+          ref={(ref) => diamondRefs.current.set(data.name, ref)}
+        />
       ))}
     </mesh>
   );
+}
+
+function CameraLogger() {
+  const { camera } = useThree();
+  useFrame(() => {
+    const position = camera.position;
+    console.log("カメラの位置:", position);
+    const unitVector = position.clone().normalize();
+    //console.log("カメラの単位ベクトル:", unitVector);
+    const yRotation = camera.rotation.y;
+    //console.log("カメラのy軸回転角度:", yRotation);
+  });
+  return null;
 }
 
 function Atmosphere() {
@@ -62,17 +88,23 @@ function Atmosphere() {
   );
 }
 
-const Diamond = forwardRef(({ position, name }, ref) => {
+const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, ref) => {
+  const { scene } = useThree();
+  const { camera } = useThree();
+
+  const isVisible = tag === currentTag;
+
+  const [videos, setVideos] = useState([]);
+  const [conePosition, setConePosition] = useState(new THREE.Vector3());
+  //const [visibleName, setVisibleName] = useState("");
+  //const [isVisible, setIsVisible] = useState(false);
 
   const pyramid1Ref = useRef();
   const pyramid2Ref = useRef();
 
-
   useFrame(() => {
     const time = Date.now() * 0.002;
     const color = (time % 2 < 1) ? new THREE.Color(0x0000ff) : new THREE.Color(0xff0000);
-
-    // 直接meshのマテリアルを更新
     if (pyramid1Ref.current) {
       pyramid1Ref.current.material.color = color;
     }
@@ -80,8 +112,6 @@ const Diamond = forwardRef(({ position, name }, ref) => {
       pyramid2Ref.current.material.color = color;
     }
   });
-
-
 
 
   const earthRadius = 1;
@@ -93,11 +123,43 @@ const Diamond = forwardRef(({ position, name }, ref) => {
   const pitch = Math.asin(adjustedPosition.y / adjustedPosition.length());
   const yaw = Math.atan2(-adjustedPosition.x, -adjustedPosition.z);
 
+  const handleClick = async () => {
 
+    const conePosition = pyramid1Ref.current.position;
+    event.stopPropagation();
+    setConePosition(pyramid1Ref.current.position);
+    console.log(conePosition);
+    console.log(id);
+    try {
+      const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}`);
+      const videos = await response.json();
+      console.log(videos);
+      setVideos(videos);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleTouch = async (event) => {
+
+    const conePosition = pyramid1Ref.current.position;
+    event.stopPropagation();
+    setConePosition(pyramid1Ref.current.position);
+    console.log(conePosition);
+    console.log(id);
+    try {
+      const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}`);
+      const videos = await response.json();
+      console.log(videos);
+      setVideos(videos);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <group ref={ref} position={adjustedPosition} rotation={[pitch, yaw, 0]}>
-      <mesh ref={pyramid1Ref}>
+    <group ref={ref} position={adjustedPosition} rotation={[pitch, yaw, 0]}  >
+      <mesh ref={pyramid1Ref} onClick={handleClick} onTouchStart={handleTouch}>
         <coneGeometry args={[1 / 108, 1 / 54, 16]} />
         <meshStandardMaterial />
       </mesh>
@@ -105,26 +167,89 @@ const Diamond = forwardRef(({ position, name }, ref) => {
         <coneGeometry args={[1 / 108, 1 / 54, 16]} />
         <meshStandardMaterial />
       </mesh>
-      <Html>
-        <div style={{ color: 'white', fontSize: '10px' }}>
-          {name}
-        </div>
-      </Html>
+      {isVisible && (
+        <Html>
+          <div style={{ color: 'white', fontSize: '10px' }}>
+            {name}
+          </div>
+        </Html>
+      )}
+      <ThumbnailBoxes videos={videos} proxyServerUrl="http://localhost:3001" position={conePosition} />
     </group>
   );
-});
+}));
+
+function ThumbnailBoxes({ videos, proxyServerUrl, position }) {
+  const textureLoader = new THREE.TextureLoader();
+
+  return videos.map((video, index) => {
+    const proxyUrl = `${proxyServerUrl}/proxy?url=${encodeURIComponent(video.thumbnail)}`;
+    const texture = textureLoader.load(proxyUrl);
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+
+    const meshRef = useRef();
+    const offset = index * 0.13;
+    const boxPosition = [position.x + offset, position.y + 0.03, position.z];
+
+    useFrame(() => {
+      if (meshRef.current) {
+        meshRef.current.lookAt(camera.position);
+      }
+    });
+
+
+    return (
+      <mesh key={index} position={boxPosition} material={material} onClick={() => showVideo(video.videoId)} onTouchStart={() => showVideo(video.videoId)}>
+        <boxGeometry args={[0.1, 0.01, 0.055]} />
+      </mesh>
+    );
+  });
+}
+
+function showVideo(videoId) {
+  const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+  const iframe = document.createElement('iframe');
+  iframe.src = embedUrl;
+  iframe.width = '640';  // iframeの幅
+  iframe.height = '360'; // iframeの高さ
+  iframe.frameBorder = '0';
+  iframe.allowFullscreen = true;
+  // idが'video-container'の要素内
+  const container = document.getElementById('video-container');
+  container.appendChild(iframe);
+  console.log(videoId);
+
+  window.addEventListener('click', function (event) {
+    // iframe要素を取得
+    const iframe = document.querySelector('#video-container iframe');
+    // iframeが存在し、クリックがiframe外で発生した場合
+    if (iframe && !iframe.contains(event.target)) {
+      // iframeを削除
+      iframe.remove();
+    }
+  });
+}
+
+
+
 
 function App() {
 
   return (
 
     <Canvas style={{ backgroundColor: 'black' }}>
+      <CameraLogger />
       <ambientLight intensity={5} />
       <pointLight position={[0, 0, 3]} />
       <Earth cubeData={cubeData} />
       <Atmosphere />
       <OrbitControls />
+      <Html>
+        <div id="video-container"></div>
+      </Html>
+      <axesHelper args={[5]} />
     </Canvas>
+
 
   );
 }
