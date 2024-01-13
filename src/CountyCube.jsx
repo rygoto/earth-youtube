@@ -1,6 +1,43 @@
 import * as THREE from 'three';
 
-export const cubeData = [
+export const cubeDataAsia =
+    [
+
+        //なんか位置がずれている！！！
+        //東アジア 
+        { id: "JP", position: new THREE.Vector3(-0.6076, 0.5934, -0.5264), name: "日本", tag: "asia", ename: "Japan" },    //日本
+        { id: "KR", position: new THREE.Vector3(-0.4928, 0.5976, -0.6257), name: "韓国", tag: "asia", ename: "Korea" },    //韓国
+        //{ id: "CN", position: new THREE.Vector3(-0.3045, 0.7203, -0.6228) },    //中国
+        { id: "TW", position: new THREE.Vector3(-0.471997, 0.404761, -0.781526), name: "台湾", tag: "asia", ename: "Taiwan" },    //台湾
+        { id: "HK", position: new THREE.Vector3(-0.363409, 0.392849, -0.843914), name: "香港", tag: "asia", ename: "Hongkong" },
+        //中央アジア
+        { id: "IN", position: new THREE.Vector3(0.1860, 0.3510, -0.9161), name: "インド", tag: "middle", ename: "India" },    //インド
+        { id: "RU", position: new THREE.Vector3(0.1894, 0.8973, -0.3938), name: "ロシア", tag: "middle", ename: "Russia" },    //ロシア
+        { id: "KZ", position: new THREE.Vector3(0.4838, 0.7136, -0.5039), name: "カザフスタン", tag: "middle", ename: "Kazahsutan" },    //カザフスタン
+        { id: "UZ", position: new THREE.Vector3(0.5439, 0.6473, -0.5314), name: "ウズベキスタン", tag: "middle", ename: "Uzbekistan" },    //ウズベキスタン
+    ]
+
+export const cubeDataAmerica =
+    [
+        //北アメリカ
+        { id: "US", position: new THREE.Vector3(-0.159207, 0.635375, 0.755181), name: "アメリカ", tag: "america" },    //アメリカ
+        { id: "CA", position: new THREE.Vector3(-0.110040, 0.809703, 0.575856), name: "カナダ", tag: "america" },    //カナダ
+        { id: "MX", position: new THREE.Vector3(-0.200108, 0.453999, 0.866966), name: "メキシコ", tag: "america" },     //ウズベキスタン 
+    ]
+
+export const cubeDataWest =
+    [   //西ヨーロッパ
+        { id: "ES", position: new THREE.Vector3(0.7690, 0.6295, 0.0766), name: "スペイン", tag: "west" },    //スペイン
+        { id: "FR", position: new THREE.Vector3(0.656045, 0.751573, -0.064791), name: "フランス", tag: "west" },    //フランス
+        { id: "DE", position: new THREE.Vector3(0.617656, 0.774008, -0.136663), name: "ドイツ", tag: "west" },    //ドイツ
+        { id: "GB", position: new THREE.Vector3(0.594772, 0.803676, 0.005345), name: "イギリス", tag: "west" },    //イギリス
+        { id: "IT", position: new THREE.Vector3(0.730674, 0.655579, -0.185405), name: "イタリア", tag: "west" },    //イタリア
+        { id: "NL", position: new THREE.Vector3(0.607081, 0.791872, -0.061196), name: "オランダ", tag: "west" },    //オランダ
+        { id: "BE", position: new THREE.Vector3(0.629091, 0.775030, -0.055266), name: "ベルギー", tag: "west" },    //ベルギー
+        { id: "PT", position: new THREE.Vector3(0.772607, 0.623555, 0.110967), name: "ポルトガル", tag: "west" },    //ポルトガル
+    ]
+
+/*export const cubeData = [
 
     //なんか位置がずれている！！！
     //東アジア 
@@ -18,46 +55,46 @@ export const cubeData = [
     { id: "US", position: new THREE.Vector3(-0.159207, 0.635375, 0.755181), name: "アメリカ", tag: "america" },    //アメリカ
     { id: "CA", position: new THREE.Vector3(-0.110040, 0.809703, 0.575856), name: "カナダ", tag: "america" },    //カナダ
     { id: "MX", position: new THREE.Vector3(-0.200108, 0.453999, 0.866966), name: "メキシコ", tag: "america" },     //ウズベキスタン 
-]
-
-/*export const cubeData = [
+*/
+/*
+export const cubeData = [
 
     //なんか位置がずれている！！！
     //東アジア 
-    { id: "JP", position: new THREE.Vector3(-0.6076, 0.5934, -0.5264), name: "日本", tag: asia },    //日本
-    { id: "KR", position: new THREE.Vector3(-0.4928, 0.5976, -0.6257), name: "韓国", tag: asia },    //韓国
+    { id: "JP", position: new THREE.Vector3(-0.6076, 0.5934, -0.5264), name: "日本",ename: "Japan" },    //日本
+    { id: "KR", position: new THREE.Vector3(-0.4928, 0.5976, -0.6257), name: "韓国", ename:"Korea" },    //韓国
     //{ id: "CN", position: new THREE.Vector3(-0.3045, 0.7203, -0.6228) },    //中国
-    { id: "TW", position: new THREE.Vector3(-0.471997, 0.404761, -0.781526), name: "台湾", tag: asia },    //台湾
-    { id: "HK", position: new THREE.Vector3(-0.363409, 0.392849, -0.843914), name: "香港", tag: asia },    //香港
-    { id: "MN", position: new THREE.Vector3(-0.0437, 0.7681, -0.6354), name: "モンゴル", tag: asia },    //モンゴル
+    { id: "TW", position: new THREE.Vector3(-0.471997, 0.404761, -0.781526), name: "台湾",  },    //台湾
+    { id: "HK", position: new THREE.Vector3(-0.363409, 0.392849, -0.843914), name: "香港",  },    //香港
+    { id: "MN", position: new THREE.Vector3(-0.0437, 0.7681, -0.6354), name: "モンゴル",  },    //モンゴル
     //{ id: "KP", position: new THREE.Vector3(-0.4170, 0.7730, -0.4780) },    //北朝鮮
 
 
 
     //オセアニア
-    { id: "AU", position: new THREE.Vector3(-0.6550, -0.4078, -0.6324), name: "オーストラリア", tag: asia },    //オーストラリア
-    { id: "NZ", position: new THREE.Vector3(-0.7327, -0.6686, -0.0936), name: "ニュージーランド", tag: asia },    //ニュージーランド
-    { id: "PG", position: new THREE.Vector3(-0.7352, 0.0517, -0.6688), name: "パプアニューギニア", tag: asia },    //パプアニューギニア
-    { id: "FJ", position: new THREE.Vector3(-0.9495, -0.2546, -0.1652), name: "フィジー", tag: asia },    //フィジー
-    { id: "SB", position: new THREE.Vector3(-0.8586, -0.0550, -0.4985), name: "ソロモン諸島", tag: asia },    //ソロモン諸島
-    { id: "VU", position: new THREE.Vector3(-0.9284, -0.2611, -0.2450), name: "バヌアツ", tag: asia },    //バヌアツ 
+    { id: "AU", position: new THREE.Vector3(-0.6550, -0.4078, -0.6324), name: "オーストラリア", },    //オーストラリア
+    { id: "NZ", position: new THREE.Vector3(-0.7327, -0.6686, -0.0936), name: "ニュージーランド",  },    //ニュージーランド
+    { id: "PG", position: new THREE.Vector3(-0.7352, 0.0517, -0.6688), name: "パプアニューギニア",  },    //パプアニューギニア
+    { id: "FJ", position: new THREE.Vector3(-0.9495, -0.2546, -0.1652), name: "フィジー",  },    //フィジー
+    { id: "SB", position: new THREE.Vector3(-0.8586, -0.0550, -0.4985), name: "ソロモン諸島",  },    //ソロモン諸島
+    { id: "VU", position: new THREE.Vector3(-0.9284, -0.2611, -0.2450), name: "バヌアツ",  },    //バヌアツ 
 
     //中央アジア
-    { id: "IN", position: new THREE.Vector3(0.1860, 0.3510, -0.9161), name: "インド", tag: middle },    //インド
-    { id: "RU", position: new THREE.Vector3(0.1894, 0.8973, -0.3938), name: "ロシア", tag: middle },    //ロシア
-    { id: "KZ", position: new THREE.Vector3(0.4838, 0.7136, -0.5039), name: "カザフスタン", tag: middle },    //カザフスタン
-    { id: "UZ", position: new THREE.Vector3(0.5439, 0.6473, -0.5314), name: "ウズベキスタン", tag: middle },    //ウズベキスタン 
+    { id: "IN", position: new THREE.Vector3(0.1860, 0.3510, -0.9161), name: "インド",  },    //インド
+    { id: "RU", position: new THREE.Vector3(0.1894, 0.8973, -0.3938), name: "ロシア",  },    //ロシア
+    { id: "KZ", position: new THREE.Vector3(0.4838, 0.7136, -0.5039), name: "カザフスタン",  },    //カザフスタン
+    { id: "UZ", position: new THREE.Vector3(0.5439, 0.6473, -0.5314), name: "ウズベキスタン", },    //ウズベキスタン 
 
     //東南アジア    
-    { id: "ID", position: new THREE.Vector3(-0.294218, -0.108099, -0.949106), name: "インドネシア", tag: asia },    //インドネシア
-    { id: "MY", position: new THREE.Vector3(-0.217235, 0.025037, -1.024560), name: "マレーシア", tag: asia },    //マレーシア
-    { id: "VN", position: new THREE.Vector3(-0.3076, 0.2494, -0.9124), name: "ベトナム", tag: asia },    //ベトナム
-    { id: "TH", position: new THREE.Vector3(-0.1426, 0.2619, -0.9499), name: "タイ", tag: asia },    //タイ
-    { id: "PH", position: new THREE.Vector3(-0.523042, 0.230186, -0.819414), name: "フィリピン", tag: asia },    //フィリピン
-    { id: "SG", position: new THREE.Vector3(-0.237775, 0.025821, -0.969441), name: "シンガポール", tag: asia },    //シンガポール 
-    { id: "MM", position: new THREE.Vector3(-0.091508, 0.332676, -0.938441), name: "ミャンマー", tag: asia },    //ミャンマー
-    { id: "KH", position: new THREE.Vector3(-0.233719, 0.229599, -0.943346), name: "カンボジア", tag: asia },    //カンボジア
-    { id: "LA", position: new THREE.Vector3(-0.235042, 0.293347, -0.925400), name: "ラオス", tag: asia },    //ラオス
+    { id: "ID", position: new THREE.Vector3(-0.294218, -0.108099, -0.949106), name: "インドネシア",  },    //インドネシア
+    { id: "MY", position: new THREE.Vector3(-0.217235, 0.025037, -1.024560), name: "マレーシア", },    //マレーシア
+    { id: "VN", position: new THREE.Vector3(-0.3076, 0.2494, -0.9124), name: "ベトナム", },    //ベトナム
+    { id: "TH", position: new THREE.Vector3(-0.1426, 0.2619, -0.9499), name: "タイ", },    //タイ
+    { id: "PH", position: new THREE.Vector3(-0.523042, 0.230186, -0.819414), name: "フィリピン",  },    //フィリピン
+    { id: "SG", position: new THREE.Vector3(-0.237775, 0.025821, -0.969441), name: "シンガポール",  },    //シンガポール 
+    { id: "MM", position: new THREE.Vector3(-0.091508, 0.332676, -0.938441), name: "ミャンマー",  },    //ミャンマー
+    { id: "KH", position: new THREE.Vector3(-0.233719, 0.229599, -0.943346), name: "カンボジア",  },    //カンボジア
+    { id: "LA", position: new THREE.Vector3(-0.235042, 0.293347, -0.925400), name: "ラオス", },    //ラオス
     //{ id: "BN", position: new THREE.Vector3(-0.2500, 0.2000, -0.9500), name: "ブルネイ" },    //ブルネイ
     //{ id: "TL", position: new THREE.Vector3(-0.2500, 0.2000, -0.9500), name: "東ティモール" },    //東ティモール
     //{ id: "MV", position: new THREE.Vector3(-0.2500, 0.2000, -0.9500), name: "モルディブ" },    //モルディブ
@@ -157,4 +194,5 @@ export const cubeData = [
     { id: "TN", position: new THREE.Vector3(0.812123, 0.567158, -0.129379), name: "チュニジア", tag: west },    //チュニジア
     //{ id: "CI", position: new THREE.Vector3(0.9740, 0.1011, -0.1990), name: "コートジボワール" },    //コートジボワール
     { id: "MG", position: new THREE.Vector3(0.652447, -0.355527, -0.668159), name: "マダガスカル", tag: west },    //マダガスカル
-];*/
+];
+*/

@@ -2,44 +2,27 @@ import React, { useRef, useState, useEffect, forwardRef, memo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html, Text } from '@react-three/drei';
 import * as THREE from 'three';
-import { cubeData } from './CountyCube';
+import { cubeDataAsia, cubeDataAmerica, cubeDataWest } from './CountyCube';
 
-function Earth({ cubeData }) {
+function Earth({ cubeDataAsia }) {
   const earthRef = useRef();
   const textureLoader = new THREE.TextureLoader();
   const earthTexture = textureLoader.load('./Albedo.jpg');
   const diamondRefs = useRef(new Map());
-  const [currentTag, setCurrentTag] = useState("");
 
   useFrame(() => {
     //earthRef.current.rotation.y += 0.001;
   });
 
-  useFrame(({ camera }) => {
-    const xPosition = camera.position.x;
-    const zPosition = camera.position.z;
-    let tag = "";
-
-    if (zPosition > 0) {
-      tag = "america";
-    } else if (zPosition < 0) {
-      tag = "asia";
-    }
-
-    setCurrentTag(tag); // 現在のタグを更新
-  });
-
   return (
     <mesh ref={earthRef} geometry={new THREE.SphereGeometry(1, 64, 64)}>
       <meshStandardMaterial map={earthTexture} />
-      {cubeData.map((data) => (
+      {cubeDataAsia.map((data) => (
         <Diamond
           key={data.id}
           position={data.position}
-          name={data.name}
+          name={data.ename}
           id={data.id}
-          tag={data.tag}
-          currentTag={currentTag}
           ref={(ref) => diamondRefs.current.set(data.name, ref)}
         />
       ))}
@@ -92,8 +75,6 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
   const { scene } = useThree();
   const { camera } = useThree();
 
-  const isVisible = tag === currentTag;
-
   const [videos, setVideos] = useState([]);
   const [conePosition, setConePosition] = useState(new THREE.Vector3());
   //const [visibleName, setVisibleName] = useState("");
@@ -113,10 +94,8 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
     }
   });
 
-
   const earthRadius = 1;
   const diamondOffset = 0.02;
-
   const adjustedPosition = position.normalize().multiplyScalar(earthRadius + diamondOffset);  // 位置を調整
 
   // 回転角度を計算（ピッチとヨー）
@@ -167,13 +146,14 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
         <coneGeometry args={[1 / 108, 1 / 54, 16]} />
         <meshStandardMaterial />
       </mesh>
-      {isVisible && (
-        <Html>
-          <div style={{ color: 'white', fontSize: '10px' }}>
-            {name}
-          </div>
-        </Html>
-      )}
+      <Text
+        position={[0, 0.01, -0.05]}
+        scale={[-1, 1, 0.5]}
+        fontSize={0.02}
+        color="white"
+      >
+        {name}
+      </Text>
       <ThumbnailBoxes videos={videos} proxyServerUrl="http://localhost:3001" position={conePosition} />
     </group>
   );
@@ -241,13 +221,12 @@ function App() {
       <CameraLogger />
       <ambientLight intensity={5} />
       <pointLight position={[0, 0, 3]} />
-      <Earth cubeData={cubeData} />
+      <Earth cubeDataAsia={cubeDataAsia} cubeDataAmerica={cubeDataAmerica} cubeDataWest={cubeDataWest} />
       <Atmosphere />
       <OrbitControls />
       <Html>
         <div id="video-container"></div>
       </Html>
-      <axesHelper args={[5]} />
     </Canvas>
 
 
