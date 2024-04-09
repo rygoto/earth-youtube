@@ -1,8 +1,68 @@
-import React, { useRef, useState, useEffect, forwardRef, memo } from 'react';
+import React, { useRef, useState, useEffect, forwardRef, memo, createContext, useContext } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { cubeDataAsia, cubeDataAmerica, cubeDataWest } from './CountyCube';
+
+const VideoContext = createContext();
+
+const VideoProvider = ({ children }) => {
+  const [videoInfo, setVideoInfo] = useState(null);
+
+  return (
+    <VideoContext.Provider value={{ videoInfo, setVideoInfo }}>
+      {children}
+    </VideoContext.Provider>
+  );
+};
+
+const VideoModal = () => {
+  const { videoInfo, setVideoInfo } = useContext(VideoContext);
+  const modalRef = useRef();
+  const overlayRef = useRef();
+
+  const closeModal = () => {
+    setVideoInfo(null);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (overlayRef.current && overlayRef.current.contains(event.target)) {
+        closeModal();
+      }
+    };
+    if (videoInfo) {
+      document.addEventListener("click", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [videoInfo, setVideoInfo]);
+
+  if (!videoInfo) {
+    return null;
+  }
+
+  //const videoUrl = `https://www.youtube.com/embed/${videoInfo[0].videoId}`;
+  const videoUrl = `https://www.youtube.com/embed/${videoInfo[0].videoId}`;
+  //const videoUrl = 'https://www.youtube.com/embed/4WXs3sKu41I';
+  console.log(videoInfo[0].videoId);
+
+  return (
+    <div ref={overlayRef} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+      <div ref={modalRef} style={{ position: 'relative' }}>
+        <iframe
+          src={videoUrl}
+          width="640"
+          height="360"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    </div>
+  );
+};
 
 function Earth({ cubeDataAsia }) {
   const earthRef = useRef();
@@ -10,9 +70,9 @@ function Earth({ cubeDataAsia }) {
   const earthTexture = textureLoader.load('./Albedo.jpg');
   const diamondRefs = useRef(new Map());
 
-  useFrame(() => {
-    //earthRef.current.rotation.y += 0.001;
-  });
+  /*useFrame(() => {
+    earthRef.current.rotation.y += 0.001;
+  });*/
 
   return (
     <mesh ref={earthRef} geometry={new THREE.SphereGeometry(1, 64, 64)}>
@@ -30,22 +90,9 @@ function Earth({ cubeDataAsia }) {
   );
 }
 
-function CameraLogger() {
-  const { camera } = useThree();
-  useFrame(() => {
-    const position = camera.position;
-    console.log("カメラの位置:", position);
-    const unitVector = position.clone().normalize();
-    //console.log("カメラの単位ベクトル:", unitVector);
-    const yRotation = camera.rotation.y;
-    //console.log("カメラのy軸回転角度:", yRotation);
-  });
-  return null;
-}
-
 function Atmosphere() {
   return (
-    <mesh geometry={new THREE.SphereGeometry(1.06, 64, 64)}>
+    <mesh geometry={new THREE.SphereGeometry(1.02, 64, 64)}>
       <shaderMaterial
         side={THREE.FrontSide}
         transparent
@@ -77,11 +124,11 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
 
   const [videos, setVideos] = useState([]);
   const [conePosition, setConePosition] = useState(new THREE.Vector3());
-  //const [visibleName, setVisibleName] = useState("");
-  //const [isVisible, setIsVisible] = useState(false);
 
   const pyramid1Ref = useRef();
   const pyramid2Ref = useRef();
+
+  const { setVideoInfo } = useContext(VideoContext);
 
   useFrame(() => {
     const time = Date.now() * 0.002;
@@ -112,8 +159,10 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
     try {
       const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}`);
       const videos = await response.json();
+      //console.log(videos);
       console.log(videos);
       setVideos(videos);
+      setVideoInfo(videos);
     } catch (error) {
       console.log(error);
     }
@@ -147,14 +196,14 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
         <meshStandardMaterial />
       </mesh>
       <Text
-        position={[0, 0.01, -0.05]}
+        position={[0, 0.001, -0.02]}
         scale={[-1, 1, 0.5]}
         fontSize={0.02}
         color="white"
       >
         {name}
       </Text>
-      <ThumbnailBoxes videos={videos} proxyServerUrl="http://localhost:3001" position={conePosition} />
+      {/*<ThumbnailBoxes videos={videos} proxyServerUrl="http://localhost:3001" position={conePosition} />*/}
     </group>
   );
 }));
@@ -177,7 +226,6 @@ function ThumbnailBoxes({ videos, proxyServerUrl, position }) {
       }
     });
 
-
     return (
       <mesh key={index} position={boxPosition} material={material} onClick={() => showVideo(video.videoId)} onTouchStart={() => showVideo(video.videoId)}>
         <boxGeometry args={[0.1, 0.01, 0.055]} />
@@ -190,46 +238,37 @@ function showVideo(videoId) {
   const embedUrl = `https://www.youtube.com/embed/${videoId}`;
   const iframe = document.createElement('iframe');
   iframe.src = embedUrl;
-  iframe.width = '640';  // iframeの幅
-  iframe.height = '360'; // iframeの高さ
-  iframe.frameBorder = '0';
+  iframe.width = '640';
+  iframe.height = '360';
   iframe.allowFullscreen = true;
-  // idが'video-container'の要素内
   const container = document.getElementById('video-container');
   container.appendChild(iframe);
   console.log(videoId);
 
   window.addEventListener('click', function (event) {
-    // iframe要素を取得
     const iframe = document.querySelector('#video-container iframe');
-    // iframeが存在し、クリックがiframe外で発生した場合
     if (iframe && !iframe.contains(event.target)) {
-      // iframeを削除
       iframe.remove();
     }
   });
 }
 
-
-
-
 function App() {
 
   return (
-
-    <Canvas style={{ backgroundColor: 'black' }}>
-      <CameraLogger />
-      <ambientLight intensity={5} />
-      <pointLight position={[0, 0, 3]} />
-      <Earth cubeDataAsia={cubeDataAsia} cubeDataAmerica={cubeDataAmerica} cubeDataWest={cubeDataWest} />
-      <Atmosphere />
-      <OrbitControls />
-      <Html>
-        <div id="video-container"></div>
-      </Html>
-    </Canvas>
-
-
+    <VideoProvider>
+      <Canvas style={{ backgroundColor: 'black' }}>
+        <ambientLight intensity={5} />
+        <pointLight position={[0, 0, 3]} />
+        <Atmosphere />
+        <Earth cubeDataAsia={cubeDataAsia} cubeDataAmerica={cubeDataAmerica} cubeDataWest={cubeDataWest} />
+        <OrbitControls enablePan={false} />
+        <Html>
+          <div id="video-container"></div>
+        </Html>
+      </Canvas>
+      <VideoModal />
+    </VideoProvider>
   );
 }
 

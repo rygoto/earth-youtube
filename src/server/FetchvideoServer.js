@@ -9,7 +9,7 @@ const port = 3000;
 async function fetchVideos(regionCode) {
     const youtube = google.youtube({
         version: 'v3',
-        auth: ''
+        auth: 'AIzaSyAttX4v8wYrjQVo2yeqzSXWLBjfrRu3KZY'
     });
 
     const response = await youtube.videos.list({
