@@ -180,6 +180,7 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
       const videos = await response.json();
       console.log(videos);
       setVideos(videos);
+      setVideoInfo(videos);
     } catch (error) {
       console.log(error);
     }
