@@ -1,8 +1,9 @@
-import React, { useRef, useState, useEffect, forwardRef, memo, createContext, useContext } from 'react';
+import React, { useRef, useState, useEffect, useMemo, forwardRef, memo, createContext, useContext } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { cubeDataAsia, cubeDataAmerica, cubeDataWest } from './CountyCube';
+import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 
 const VideoContext = createContext();
 
@@ -83,6 +84,7 @@ function Earth({ cubeDataAsia }) {
           position={data.position}
           name={data.ename}
           id={data.id}
+          videoCategoryId={10}
           ref={(ref) => diamondRefs.current.set(data.name, ref)}
         />
       ))}
@@ -118,7 +120,21 @@ function Atmosphere() {
   );
 }
 
-const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, ref) => {
+function getGeometryPosition(geometry) {
+  const numParticles = 10000;
+  const sampler = new MeshSurfaceSampler(new THREE.Mesh(geometry)).build();
+
+  const particlesPosition = new Float32Array(numParticles * 3);
+  for (let i = 0; i < numParticles; i++) {
+    const newPosition = new THREE.Vector3();
+    sampler.sample(newPosition);
+    particlesPosition.set([newPosition.x, newPosition.y, newPosition.z], i * 3);
+  }
+  return particlesPosition;
+};
+
+
+const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag, videoCategoryId }, ref) => {
   const { scene } = useThree();
   const { camera } = useThree();
 
@@ -157,7 +173,7 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
     console.log(conePosition);
     console.log(id);
     try {
-      const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}`);
+      const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}&videoCategoryId=${videoCategoryId}`);
       const videos = await response.json();
       //console.log(videos);
       console.log(videos);
@@ -176,7 +192,7 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag }, 
     console.log(conePosition);
     console.log(id);
     try {
-      const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}`);
+      const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}&videoCategoryId=${videoCategoryId}`);
       const videos = await response.json();
       console.log(videos);
       setVideos(videos);
@@ -253,6 +269,8 @@ function showVideo(videoId) {
     }
   });
 }
+
+
 
 function App() {
 

@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 const port = 3000;
 
-async function fetchVideos(regionCode) {
+async function fetchVideos(regionCode, videoCategoryId) {
     const youtube = google.youtube({
         version: 'v3',
         auth: 'AIzaSyAttX4v8wYrjQVo2yeqzSXWLBjfrRu3KZY'
@@ -16,7 +16,7 @@ async function fetchVideos(regionCode) {
         part: 'snippet',
         chart: 'mostPopular',
         regionCode: regionCode,
-        videoCategoryId: '10'
+        videoCategoryId: videoCategoryId,
     });
 
     return response.data.items.slice(0, 3).map((item) => {
