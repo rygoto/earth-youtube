@@ -173,7 +173,8 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag, vi
     console.log(conePosition);
     console.log(id);
     try {
-      const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}&videoCategoryId=${videoCategoryId}`);
+      const response = await fetch(`/api/videos?regionCode=${id}&videoCategoryId=${videoCategoryId}`);
+      //const response = await fetch(`http://localhost:3000/api/videos?regionCode=${id}&videoCategoryId=${videoCategoryId}`);
       const videos = await response.json();
       //console.log(videos);
       console.log(videos);
