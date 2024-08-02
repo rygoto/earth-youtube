@@ -143,14 +143,15 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag, vi
 
   const pyramid1Ref = useRef();
   const pyramid2Ref = useRef();
+  const sphereRef = useRef();
 
   const { setVideoInfo } = useContext(VideoContext);
 
   useFrame(() => {
     const time = Date.now() * 0.002;
     const color = (time % 2 < 1) ? new THREE.Color(0x0000ff) : new THREE.Color(0xff0000);
-    if (pyramid1Ref.current) {
-      pyramid1Ref.current.material.color = color;
+    if (sphereRef.current) {
+      sphereRef.current.material.color = color;
     }
     if (pyramid2Ref.current) {
       pyramid2Ref.current.material.color = color;
@@ -167,9 +168,9 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag, vi
 
   const handleClick = async () => {
 
-    const conePosition = pyramid1Ref.current.position;
+    const conePosition = sphereRef.current.position;
     event.stopPropagation();
-    setConePosition(pyramid1Ref.current.position);
+    setConePosition(sphereRef.current.position);
     console.log(conePosition);
     console.log(id);
     try {
@@ -187,9 +188,9 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag, vi
 
   const handleTouch = async (event) => {
 
-    const conePosition = pyramid1Ref.current.position;
+    const conePosition = sphereRef.current.position;
     event.stopPropagation();
-    setConePosition(pyramid1Ref.current.position);
+    setConePosition(sphereRef.current.position);
     console.log(conePosition);
     console.log(id);
     try {
@@ -204,13 +205,9 @@ const Diamond = React.memo(forwardRef(({ position, name, id, tag, currentTag, vi
   };
 
   return (
-    <group ref={ref} position={adjustedPosition} rotation={[pitch, yaw, 0]}  >
-      <mesh ref={pyramid1Ref} onClick={handleClick} onTouchStart={handleTouch}>
-        <coneGeometry args={[1 / 108, 1 / 54, 16]} />
-        <meshStandardMaterial />
-      </mesh>
-      <mesh ref={pyramid2Ref} rotation={[Math.PI, 0, 0]} position={[0, -1 / 54, 0]}>
-        <coneGeometry args={[1 / 108, 1 / 54, 16]} />
+    <group ref={ref} position={adjustedPosition} rotation={[pitch, yaw, 0]}>
+      <mesh ref={sphereRef} onClick={handleClick} onTouchStart={handleTouch}>
+        <icosahedronGeometry args={[1 / 64, 3]} />
         <meshStandardMaterial />
       </mesh>
       <Text

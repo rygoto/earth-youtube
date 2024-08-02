@@ -27,6 +27,7 @@ export const cubeCountryData =
         { id: "BE", position: new THREE.Vector3(0.629091, 0.775030, -0.055266), name: "ベルギー", tag: "west", ename: "Bergium" },    //ベルギー
         { id: "PT", position: new THREE.Vector3(0.772607, 0.623555, 0.110967), name: "ポルトガル", tag: "west", ename: "Portogul" },    //ポルトガル
     ]
+//これ使ってない
 
 export const cubeDataAsia =
     [
